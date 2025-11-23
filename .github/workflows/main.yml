@@ -30,7 +30,7 @@ jobs:
 
       # 4. SSH into EC2 and Run Docker
       - name: Deploy on Server
-        uses: appleboy/ssh-action@main
+        uses: appleboy/ssh-action@master
         with:
         
           host: ${{ secrets.FRONTEND_HOST }}
