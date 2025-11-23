@@ -40,7 +40,7 @@ jobs:
             echo "Starting Deployment..."
             
             # Navigate to the folder
-            cd /home/ubuntu/frontend
+            cd /opt/frontend/uptime-kuma   # place 
             
             # Pull the latest image from Docker Hub
             sudo docker-compose pull
