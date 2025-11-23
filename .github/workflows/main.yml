@@ -1,0 +1,51 @@
+name: Frontend CI/CD
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    name: Build and Deploy to EC2
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout the code
+      - name: Checkout Code
+        uses: actions/checkout@v4 #clone repo and make runner 
+
+      # 2. Build Step 
+      - name: Build
+        run: echo "Building Frontend Application..."
+
+      # 3. Copy docker-compose.yml to EC2
+      - name: Copy Config to Server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.FRONTEND_HOST }}
+          username: ${{ secrets.FRONTEND_USERNAME }}
+          key: ${{ secrets.FRONTEND_SSH_KEY }}
+          source: "docker-compose.yml"
+          target: "/home/ubuntu/frontend"
+
+      # 4. SSH into EC2 and Run Docker
+      - name: Deploy on Server
+        uses: appleboy/ssh-action@main
+        with:
+        
+          host: ${{ secrets.FRONTEND_HOST }}
+          username: ${{ secrets.FRONTEND_USERNAME }}
+          key: ${{ secrets.FRONTEND_SSH_KEY }}
+          script: |
+            echo "Starting Deployment..."
+            
+            # Navigate to the folder
+            cd /home/ubuntu/frontend
+            
+            # Pull the latest image from Docker Hub
+            sudo docker-compose pull
+            
+            # Restart the container with the new config/image
+            sudo docker-compose up -d --remove-orphans
+            
+            echo "Deployment Complete!"
